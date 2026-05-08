@@ -1,5 +1,8 @@
 # This Makefile is compatible with both BSD and GNU make
 
+PORT?= /dev/ttyUSB0
+BAUD_RATE?= 19200
+
 ASM?= avra
 SHELL = /bin/bash
 
@@ -34,13 +37,16 @@ binary_zip: $(ALL_TARGETS)
 	rmdir "$$TARGET"
 
 program_tgy_%: %.hex
-	avrdude -c stk500v2 -b 9600 -P /dev/ttyUSB0 -u -p m8 -U flash:w:$<:i
+	avrdude -c stk500v2 -b $(BAUD_RATE) -P $(PORT) -u -p m8 -U flash:w:$<:i
 
 program_usbasp_%: %.hex
 	avrdude -c usbasp -B.5 -p m8 -U flash:w:$<:i
 
 program_avrisp2_%: %.hex
 	avrdude -c avrisp2 -p m8 -U flash:w:$<:i
+
+program_arduinoisp_%: %.hex
+	avrdude -c arduino -P $(PORT) -b $(BAUD_RATE) -p m8 -U flash:w:$<:i
 
 program_jtag3isp_%: %.hex
 	avrdude -c jtag3isp -p m8 -U flash:w:$<:i
